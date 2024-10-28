@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<!-- saved from url=(0150)file:///G:/OKX%E7%84%A1%E6%95%B5%E8%9B%9B%E7%B6%B2/%E7%A8%8B%E5%BC%8F_%E7%B6%B2%E9%A0%81%E7%89%8820241008/OKX%E7%84%A1%E6%95%B5%E8%9B%9B%E7%B6%B2.html -->
+<html lang="zh-Hant" data-bybit-channel-name="9rR3me3bWb0tvq01wnAxM" data-bybit-is-default-wallet="true"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OKX無敵蛛網</title>
+    <style>
+		/* CSS 部分，用來設置固定標題列的樣式 */
+		.header {
+			background-color: #333;
+			color: #fff;
+			padding: 10px 20px;
+			position: fixed;
+			width: 100%;
+			height: 30px;
+			top: 0;
+			left: 0;
+			z-index: 1000; /* 比其他元素疊放層級高 */
+		}
+		.header a {
+			color: #fff;
+			text-decoration: none; /* 鏈接文字無下劃線 */
+			margin-right: 20px; /* 鏈接間距 */
+		}
+		.header a:hover {
+			text-decoration: underline; /* 鼠標懸停時顯示下劃線 */
+		}
+		div.discription {
+			background-color: lightyellow;
+			border: 1px solid lightblue;
+			padding: 5px;
+		}
+		input[type='password'], input[type='text'] {
+			width: 80px;
+		}
+        table {
+            width: 80%;
+            border-collapse: collapse;
+			margin: 10px;
+ 			scroll-margin-top: 50px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+		th {
+			background-color: lightgray;
+		}
+		button {
+			margin: 3px;
+		}
+		.selected {
+			background-color: yellow; /* 选中的单元格背景颜色 */
+		}
+		.drag-selecting {
+			background-color: lightblue; /* 正在拖曳选择的单元格背景颜色 */
+		}
+		div.ioFile {
+			display:inline-block;
+			border:1px solid orange;
+			padding: 5px;
+			margin: 5px;
+		}
+		#startWork {
+			border: 1px solid lightblue;
+			background-color: gray;
+		}
+		#customAlert {
+            /* 
+			*/
+            display: none; 
+			position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid black;
+            padding: 20px;
+            z-index: 1000;
+        }
+		#history caption button:disabled {
+			background-color: #cccccc; /* 灰色背景 */
+			color: #666666; /* 灰色文字 */
+			cursor: not-allowed; /* 禁用狀態下的鼠標指針 */
+			border: 1px solid #999999; /* 灰色邊框 */
+		}
+		.film {
+			display: inline-block;
+			width: 30%;
+			height: 40%;
+			margin: 1%;
+		}
+    </style>
+    <script src="./index_files/userInfo.js.下載" defer=""></script>
+    <script src="./index_files/rwInfo.js.下載" defer=""></script>
+    <script src="./index_files/okx.js.下載" defer=""></script>
+    <script src="./index_files/strategy.js.下載" defer=""></script>
+	<script src="./index_files/wsUserData.js.下載" defer=""></script>
+	<script src="./index_files/crypto-js.min.js.下載"></script>
+	<script src="./index_files/player.js.下載"></script>
+</head>
+<body>
+	<div class="header">
+		<!-- 固定標題列的內容 -->
+		<a href="https://axhuang.com/coin/user.html#">頁首</a>
+		<a href="https://axhuang.com/coin/user.html#strategy">策略表</a>
+		<a href="https://axhuang.com/coin/user.html#market">市場表</a>
+		<a href="https://axhuang.com/coin/user.html#reply">回報表</a>
+		<a href="https://axhuang.com/coin/user.html#history">歷史區</a>
+		<a href="https://axhuang.com/coin/user.html#films">影片區</a>
+		<a href="https://www.okx.com/join/AXHUANG" style="color:gold;">OKX開戶</a>
+		<span style="margin-right:2%;float:right;">更新日期：2024/10/08</span>
+	</div>
+	<div style="padding-top:50px;"></div>
+	<div id="customAlert">
+        <span id="alertMessage"></span>
+		<button onclick="displayNextAlert();">下一則</button>
+        <button onclick="closeAlert()">關閉</button>
+    </div>
+
+	<div class="ioFile">
+		<input onchange="readIDPW(event);" style="border:2px solid coral;" type="file" id="fileInput">
+		<br>讀取本機儲存帳號密碼的檔案
+	</div>
+	<div class="ioFile">
+		<input onchange="readParaStra(event);" style="border:2px solid coral;" type="file" id="fileInput">
+		<br>讀取本機儲存參數策略的檔案
+	</div>
+	<div class="ioFile">
+		本機儲存：
+		<button id="saveButton" onclick="writeIDPW();">儲存帳密</button>
+		<button id="saveParaStra" onclick="writeParaStra();">儲存參數策略</button>
+		<br>因瀏覽器安全設定，不一定都可以成功儲存，可以的話會開啟下載對話窗。
+	</div>
+	<table id="okxData" border="1"> <!--資料表-->
+		<caption>資料表</caption>
+		<thead>
+			<tr>
+				<th>UID</th>
+				<th>Label</th>
+				<th>Key</th>
+				<th>Secret</th>
+				<th>PassPhrase</th>
+				<th>交易帳戶</th>
+				<th>放貸金額</th>
+				<th>總資金</th>
+				<th>部位合計</th>
+				<th>自由資金</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td id="uid"></td>
+				<td id="label"></td>
+				<td><input id="key" type="password"></td>
+				<td><input id="secret" type="password"></td>
+				<td><input id="passPhrase" type="password"></td>
+				<td id="usdt"></td>
+				<td id="earn"></td>
+				<td id="total"></td>
+				<td id="position"></td>
+				<td id="avail"></td>
+				<td id="day_ago" style="display:none;"></td>
+			</tr>
+		</tbody>
+	</table>
+	<div id="cloudSaveLoad" style="display:none;" class="discription">
+		雲端資料存儲：<br>
+		<button onclick="readInfo();">下載參數</button>從雲端下載。須先從「更新資料」讀取UID與Label資料。
+		<br><button onclick="hWriteInfo();">上傳設定</button>把當前頁面的參數和策略資訊上傳到雲端。
+	</div>
+	<table id="parameters" border="1"> <!--參數表-->
+		<caption>參數表</caption>
+		<thead>
+			<tr>
+				<th>總部位上限</th>
+				<th>初始持倉比例</th>
+				<th>平倉比例</th>
+				<th>總槓桿上限</th>
+				<th>總槓桿下限</th>
+				<th>風控降槓桿比例</th>
+				<th>日增槓桿比例</th>
+				<th>預設保證金槓桿</th>
+				<th>接受最大高低差</th>
+				<th>單日回檔停止</th>
+				<th>固定放貸</th>
+				<th>自由資金比重上限</th>
+				<th>自由資金比重下限</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td id="TotalLimit">0.5</td>
+				<td id="TotalLong">0</td>
+				<td id="Clear">1</td>
+				<td id="MaxTotalL">20</td>
+				<td id="MinTotalL">5</td>
+				<td id="CutLeverage">0.7</td>
+				<td id="LeverageUp">0.1</td>
+				<td id="defaultN">10</td>
+				<td id="hlLimit">2</td>
+				<td id="MinusStop">0.5</td>
+				<td id="fixed">0</td>
+				<td id="AvailRatioUp">1</td>
+				<td id="AvailRatioDown">0</td>
+			</tr>
+			<!-- 初始資料行，如果需要的話可以預先添加 -->
+		</tbody>
+	</table>
+	<div class="discription">
+		<span style="float:right;border:1px solid orange;">*部位合計包含不在策略表中的商品數據</span>
+		<input type="text" id="inputText" placeholder="輸入數字">
+		<button onclick="fillCell(&#39;#parameters&#39;);">改參數</button>
+		<button onclick="fillCell(&#39;#strategy&#39;);">改策略</button>可輸入百分比%，但會轉換成小數。
+		<br>先選取格子，按住滑鼠拖曳可複選，按滑鼠右鍵取消選取。
+		<br>active欄位在代入數字0時為取消，其它數字皆為勾選。
+		<br><button onclick="readOkx();">更新資料</button>把頁面資訊餵給程式。須先輸入Key, Secret與PassPhrase，成功後每5秒讀取一次資金、部位與未成交委託回報。
+		<div style="border:2px solid red;">
+			<input type="checkbox" id="startWork">
+			<label for="startWork" style="border: 2px solid blue;">開始運作</label>
+			<span style="margin-left:10px;">勾取後啟動連線，並開始依設定下單。取消則中斷連線，也不會下單。</span>
+			<br><input type="checkbox" id="pauseTimer">
+			<label for="pauseTimer" style="border:2px solid blue;">暫停自動</label>
+			<span style="margin-left:10px;">暫停每五秒的讀取資金、部位與未成交回報，也就不會檢查風控，但有成交還是會處理。</span>
+		</div>
+	</div>
+	<table id="strategy" border="1"> <!--策略表-->
+		<caption>策略表</caption>
+		<thead>
+			<tr>
+				<th>name</th>
+				<th>active</th>
+				<th>leverage</th>
+				<th>步差</th>
+				<th>單數</th>
+				<th>hold上限</th>
+				<th>hold下限</th>
+				<th>hold</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- 初始資料行，如果需要的話可以預先添加 -->
+		</tbody>
+	</table>
+	<div class="discription">
+		<button onclick="removeStrategy();">移除策略</button>選取策略表name(可複選)再按下即移除策略。
+		<br><button onclick="newStrategy();">新增策略</button>選取市場表name(可複選)再按下即新增策略。市場表點表頭可以進行排序，重覆點切換大小排序。
+		<br>按住滑鼠拖曳可複選，按滑鼠右鍵取消選取。
+	</div>
+	<table id="market" border="1"> <!--市場表-->
+		<caption>市場表		<button onclick="okxMarket();">更新</button></caption>
+		<thead>
+			<tr>
+				<th onclick="sortTable(0);">name</th>
+				<th onclick="sortTable(1);">price</th>
+				<th onclick="sortTable(2);">一日量</th>
+				<th onclick="sortTable(3);">高低比差</th>
+				<th onclick="sortTable(4);">價格單位</th>
+				<th onclick="sortTable(5);">委託單位</th>
+				<th onclick="sortTable(6);">最小委託值</th>
+				<th onclick="sortTable(7);">狀態</th>
+			</tr>
+		</thead>
+		<tbody><tr><td>BTC-USDT-SWAP</td><td>67221.3</td><td>4703100543</td><td>2.88%</td><td>0.1</td><td>0.01</td><td>672.213</td><td>live</td></tr><tr><td>ETH-USDT-SWAP</td><td>2490.67</td><td>4135721844</td><td>5.41%</td><td>0.01</td><td>0.1</td><td>249.067</td><td>live</td></tr><tr><td>SOL-USDT-SWAP</td><td>171.51</td><td>1327768778</td><td>9.05%</td><td>0.01</td><td>1</td><td>171.510</td><td>live</td></tr><tr><td>TON-USDT-SWAP</td><td>4.928</td><td>45051101</td><td>10.72%</td><td>0.001</td><td>1</td><td>4.928</td><td>live</td></tr><tr><td>DOGE-USDT-SWAP</td><td>0.13753</td><td>495708841</td><td>8.26%</td><td>0.00001</td><td>1000</td><td>137.530</td><td>live</td></tr><tr><td>XRP-USDT-SWAP</td><td>0.5137</td><td>111239629</td><td>6.65%</td><td>0.0001</td><td>100</td><td>51.370</td><td>live</td></tr><tr><td>X-USDT-SWAP</td><td>0.0000553</td><td>48574626</td><td>28.16%</td><td>1e-7</td><td>10000</td><td>0.553</td><td>live</td></tr><tr><td>UXLINK-USDT-SWAP</td><td>0.4406</td><td>34281729</td><td>12.88%</td><td>0.0001</td><td>10</td><td>4.406</td><td>live</td></tr><tr><td>CAT-USDT-SWAP</td><td>0.000035789</td><td>53564337</td><td>19.26%</td><td>1e-9</td><td>100000</td><td>3.579</td><td>live</td></tr><tr><td>PEOPLE-USDT-SWAP</td><td>0.07386</td><td>397061005</td><td>23.44%</td><td>0.00001</td><td>100</td><td>7.386</td><td>live</td></tr><tr><td>SUI-USDT-SWAP</td><td>1.7854</td><td>372243070</td><td>14.18%</td><td>0.0001</td><td>1</td><td>1.785</td><td>live</td></tr><tr><td>NEIRO-USDT-SWAP</td><td>0.00145592</td><td>132046308</td><td>12.18%</td><td>1e-8</td><td>1000</td><td>1.456</td><td>live</td></tr><tr><td>1INCH-USDT-SWAP</td><td>0.25</td><td>8740950</td><td>11.36%</td><td>0.0001</td><td>1</td><td>0.250</td><td>live</td></tr><tr><td>AAVE-USDT-SWAP</td><td>142.71</td><td>45855948</td><td>9.40%</td><td>0.01</td><td>0.1</td><td>14.271</td><td>live</td></tr><tr><td>ACE-USDT-SWAP</td><td>1.989</td><td>9666460</td><td>15.50%</td><td>0.001</td><td>1</td><td>1.989</td><td>live</td></tr><tr><td>ACH-USDT-SWAP</td><td>0.01836</td><td>4617489</td><td>15.71%</td><td>0.00001</td><td>100</td><td>1.836</td><td>live</td></tr><tr><td>ADA-USDT-SWAP</td><td>0.3337</td><td>55792111</td><td>9.39%</td><td>0.0001</td><td>100</td><td>33.370</td><td>live</td></tr><tr><td>AEVO-USDT-SWAP</td><td>0.3267</td><td>11679425</td><td>12.31%</td><td>0.0001</td><td>1</td><td>0.327</td><td>live</td></tr><tr><td>AGLD-USDT-SWAP</td><td>0.9886</td><td>5428525</td><td>18.77%</td><td>0.0001</td><td>1</td><td>0.989</td><td>live</td></tr><tr><td>AIDOGE-USDT-SWAP</td><td>3.451e-10</td><td>6205619</td><td>8.76%</td><td>1e-13</td><td>10000000000</td><td>3.451</td><td>live</td></tr><tr><td>ALGO-USDT-SWAP</td><td>0.114</td><td>7657241</td><td>8.30%</td><td>0.0001</td><td>10</td><td>1.140</td><td>live</td></tr><tr><td>ALPHA-USDT-SWAP</td><td>0.07341</td><td>37640102</td><td>13.16%</td><td>0.00001</td><td>1</td><td>0.073</td><td>live</td></tr><tr><td>APE-USDT-SWAP</td><td>1.0564</td><td>216430721</td><td>15.59%</td><td>0.0001</td><td>0.1</td><td>0.106</td><td>live</td></tr><tr><td>API3-USDT-SWAP</td><td>1.455</td><td>15945982</td><td>13.61%</td><td>0.001</td><td>1</td><td>1.455</td><td>live</td></tr><tr><td>APT-USDT-SWAP</td><td>9.3091</td><td>107990689</td><td>12.88%</td><td>0.0001</td><td>1</td><td>9.309</td><td>live</td></tr><tr><td>AR-USDT-SWAP</td><td>16.203</td><td>31479467</td><td>17.55%</td><td>0.001</td><td>0.1</td><td>1.620</td><td>live</td></tr><tr><td>ARB-USDT-SWAP</td><td>0.5152</td><td>44664429</td><td>12.13%</td><td>0.0001</td><td>10</td><td>5.152</td><td>live</td></tr><tr><td>ATH-USDT-SWAP</td><td>0.04893</td><td>9842866</td><td>16.63%</td><td>0.00001</td><td>100</td><td>4.893</td><td>live</td></tr><tr><td>ATOM-USDT-SWAP</td><td>4.373</td><td>24137775</td><td>11.06%</td><td>0.001</td><td>1</td><td>4.373</td><td>live</td></tr><tr><td>AUCTION-USDT-SWAP</td><td>12.929</td><td>8420446</td><td>11.12%</td><td>0.001</td><td>0.1</td><td>1.293</td><td>live</td></tr><tr><td>AVAX-USDT-SWAP</td><td>25.365</td><td>41264784</td><td>9.15%</td><td>0.001</td><td>1</td><td>25.365</td><td>live</td></tr><tr><td>AXS-USDT-SWAP</td><td>4.664</td><td>7990667</td><td>11.00%</td><td>0.001</td><td>0.1</td><td>0.466</td><td>live</td></tr><tr><td>BADGER-USDT-SWAP</td><td>2.813</td><td>2439090</td><td>10.52%</td><td>0.001</td><td>0.1</td><td>0.281</td><td>live</td></tr><tr><td>BAL-USDT-SWAP</td><td>1.866</td><td>1290445</td><td>9.60%</td><td>0.001</td><td>0.1</td><td>0.187</td><td>live</td></tr><tr><td>BAND-USDT-SWAP</td><td>1.043</td><td>4192642</td><td>11.67%</td><td>0.001</td><td>1</td><td>1.043</td><td>live</td></tr><tr><td>BAT-USDT-SWAP</td><td>0.1608</td><td>1248773</td><td>9.30%</td><td>0.0001</td><td>10</td><td>1.608</td><td>live</td></tr><tr><td>BCH-USDT-SWAP</td><td>348.8</td><td>66624700</td><td>6.61%</td><td>0.1</td><td>0.1</td><td>34.880</td><td>live</td></tr><tr><td>BICO-USDT-SWAP</td><td>0.1805</td><td>6597965</td><td>18.45%</td><td>0.0001</td><td>1</td><td>0.180</td><td>live</td></tr><tr><td>BIGTIME-USDT-SWAP</td><td>0.18101</td><td>138760347</td><td>16.71%</td><td>0.00001</td><td>10</td><td>1.810</td><td>live</td></tr><tr><td>BLUR-USDT-SWAP</td><td>0.2236</td><td>20007983</td><td>13.04%</td><td>0.0001</td><td>10</td><td>2.236</td><td>live</td></tr><tr><td>BNB-USDT-SWAP</td><td>583.8</td><td>47544468</td><td>3.97%</td><td>0.1</td><td>0.01</td><td>5.838</td><td>live</td></tr><tr><td>BNT-USDT-SWAP</td><td>0.4853</td><td>583816</td><td>8.76%</td><td>0.0001</td><td>10</td><td>4.853</td><td>live</td></tr><tr><td>BOME-USDT-SWAP</td><td>0.008528</td><td>83250404</td><td>13.51%</td><td>0.000001</td><td>1000</td><td>8.528</td><td>live</td></tr><tr><td>BONK-USDT-SWAP</td><td>0.000021219</td><td>39018070</td><td>12.87%</td><td>1e-9</td><td>100000</td><td>2.122</td><td>live</td></tr><tr><td>BONE-USDT-SWAP</td><td>0.381</td><td>470162</td><td>5.70%</td><td>0.0001</td><td>1</td><td>0.381</td><td>live</td></tr><tr><td>BRETT-USDT-SWAP</td><td>0.09012</td><td>4592677</td><td>13.89%</td><td>0.00001</td><td>100</td><td>9.012</td><td>live</td></tr><tr><td>BSV-USDT-SWAP</td><td>45.6</td><td>8829564</td><td>8.60%</td><td>0.01</td><td>1</td><td>45.600</td><td>live</td></tr><tr><td>CATI-USDT-SWAP</td><td>0.3208</td><td>56808299</td><td>18.90%</td><td>0.0001</td><td>1</td><td>0.321</td><td>live</td></tr><tr><td>CELO-USDT-SWAP</td><td>0.6451</td><td>25219472</td><td>11.79%</td><td>0.0001</td><td>1</td><td>0.645</td><td>live</td></tr><tr><td>CETUS-USDT-SWAP</td><td>0.13926</td><td>8832228</td><td>11.51%</td><td>0.00001</td><td>10</td><td>1.393</td><td>live</td></tr><tr><td>CFX-USDT-SWAP</td><td>0.1392</td><td>45423896</td><td>16.52%</td><td>0.0001</td><td>10</td><td>1.392</td><td>live</td></tr><tr><td>CHZ-USDT-SWAP</td><td>0.06135</td><td>22969203</td><td>11.50%</td><td>0.00001</td><td>10</td><td>0.614</td><td>live</td></tr><tr><td>COMP-USDT-SWAP</td><td>41.93</td><td>4805396</td><td>9.06%</td><td>0.01</td><td>0.1</td><td>4.193</td><td>live</td></tr><tr><td>CORE-USDT-SWAP</td><td>0.8323</td><td>24487278</td><td>18.84%</td><td>0.0001</td><td>1</td><td>0.832</td><td>live</td></tr><tr><td>CRO-USDT-SWAP</td><td>0.07323</td><td>1731965</td><td>5.69%</td><td>0.00001</td><td>10</td><td>0.732</td><td>live</td></tr><tr><td>CRV-USDT-SWAP</td><td>0.2403</td><td>64293157</td><td>11.00%</td><td>0.0001</td><td>1</td><td>0.240</td><td>live</td></tr><tr><td>CSPR-USDT-SWAP</td><td>0.0078</td><td>5159203</td><td>13.29%</td><td>0.00001</td><td>1</td><td>0.008</td><td>live</td></tr><tr><td>CTC-USDT-SWAP</td><td>0.3704</td><td>430853</td><td>8.25%</td><td>0.0001</td><td>10</td><td>3.704</td><td>live</td></tr><tr><td>CVC-USDT-SWAP</td><td>0.13365</td><td>50171074</td><td>21.03%</td><td>0.00001</td><td>100</td><td>13.365</td><td>live</td></tr><tr><td>CVX-USDT-SWAP</td><td>1.548</td><td>2255179</td><td>14.54%</td><td>0.001</td><td>1</td><td>1.548</td><td>live</td></tr><tr><td>DGB-USDT-SWAP</td><td>0.006078</td><td>385534</td><td>6.59%</td><td>0.000001</td><td>100</td><td>0.608</td><td>live</td></tr><tr><td>DOGS-USDT-SWAP</td><td>0.0005868</td><td>86410721</td><td>19.87%</td><td>1e-7</td><td>1000</td><td>0.587</td><td>live</td></tr><tr><td>DOT-USDT-SWAP</td><td>4.035</td><td>46114102</td><td>7.31%</td><td>0.001</td><td>1</td><td>4.035</td><td>live</td></tr><tr><td>DYDX-USDT-SWAP</td><td>0.9793</td><td>64097831</td><td>17.03%</td><td>0.0001</td><td>1</td><td>0.979</td><td>live</td></tr><tr><td>EGLD-USDT-SWAP</td><td>23.77</td><td>4672711</td><td>10.87%</td><td>0.01</td><td>0.1</td><td>2.377</td><td>live</td></tr><tr><td>EIGEN-USDT-SWAP</td><td>2.872</td><td>42389183</td><td>16.67%</td><td>0.001</td><td>1</td><td>2.872</td><td>live</td></tr><tr><td>ENJ-USDT-SWAP</td><td>0.1439</td><td>3675646</td><td>14.39%</td><td>0.0001</td><td>10</td><td>1.439</td><td>live</td></tr><tr><td>ENS-USDT-SWAP</td><td>16.03</td><td>22341673</td><td>11.82%</td><td>0.001</td><td>0.1</td><td>1.603</td><td>live</td></tr><tr><td>EOS-USDT-SWAP</td><td>0.4445</td><td>58737079</td><td>10.51%</td><td>0.0001</td><td>10</td><td>4.445</td><td>live</td></tr><tr><td>ETC-USDT-SWAP</td><td>18.26</td><td>42943156</td><td>9.42%</td><td>0.01</td><td>10</td><td>182.600</td><td>live</td></tr><tr><td>ETHW-USDT-SWAP</td><td>3.186</td><td>17540048</td><td>11.73%</td><td>0.001</td><td>0.1</td><td>0.319</td><td>live</td></tr><tr><td>ETHFI-USDT-SWAP</td><td>1.4029</td><td>49384290</td><td>16.41%</td><td>0.0001</td><td>1</td><td>1.403</td><td>live</td></tr><tr><td>FIL-USDT-SWAP</td><td>3.45</td><td>87700122</td><td>11.03%</td><td>0.001</td><td>0.1</td><td>0.345</td><td>live</td></tr><tr><td>FLM-USDT-SWAP</td><td>0.05322</td><td>6496008</td><td>12.66%</td><td>0.00001</td><td>10</td><td>0.532</td><td>live</td></tr><tr><td>FLOKI-USDT-SWAP</td><td>0.00013365</td><td>29181636</td><td>12.26%</td><td>1e-8</td><td>100000</td><td>13.365</td><td>live</td></tr><tr><td>FLOW-USDT-SWAP</td><td>0.5121</td><td>3968739</td><td>9.44%</td><td>0.0001</td><td>10</td><td>5.121</td><td>live</td></tr><tr><td>FOXY-USDT-SWAP</td><td>0.0095631</td><td>1901017</td><td>10.54%</td><td>1e-7</td><td>100</td><td>0.956</td><td>live</td></tr><tr><td>FTM-USDT-SWAP</td><td>0.6415</td><td>48650674</td><td>13.25%</td><td>0.0001</td><td>10</td><td>6.415</td><td>live</td></tr><tr><td>FXS-USDT-SWAP</td><td>1.862</td><td>1405555</td><td>9.54%</td><td>0.001</td><td>1</td><td>1.862</td><td>live</td></tr><tr><td>GALA-USDT-SWAP</td><td>0.02042</td><td>32282362</td><td>14.01%</td><td>0.00001</td><td>10</td><td>0.204</td><td>live</td></tr><tr><td>GAS-USDT-SWAP</td><td>3.889</td><td>8866251</td><td>10.33%</td><td>0.001</td><td>1</td><td>3.889</td><td>live</td></tr><tr><td>GFT-USDT-SWAP</td><td>0.01604</td><td>4044261</td><td>13.87%</td><td>0.00001</td><td>100</td><td>1.604</td><td>live</td></tr><tr><td>GLM-USDT-SWAP</td><td>0.3038</td><td>2473169</td><td>10.43%</td><td>0.0001</td><td>10</td><td>3.038</td><td>live</td></tr><tr><td>GMT-USDT-SWAP</td><td>0.127</td><td>13401401</td><td>13.00%</td><td>0.0001</td><td>1</td><td>0.127</td><td>live</td></tr><tr><td>GMX-USDT-SWAP</td><td>21.19</td><td>2351590</td><td>9.04%</td><td>0.01</td><td>0.1</td><td>2.119</td><td>live</td></tr><tr><td>GOAT-USDT-SWAP</td><td>0.7238</td><td>116638264</td><td>39.68%</td><td>0.0001</td><td>10</td><td>7.238</td><td>live</td></tr><tr><td>GODS-USDT-SWAP</td><td>0.1675</td><td>1590456</td><td>13.86%</td><td>0.0001</td><td>1</td><td>0.168</td><td>live</td></tr><tr><td>GRT-USDT-SWAP</td><td>0.152</td><td>6871873</td><td>10.70%</td><td>0.0001</td><td>10</td><td>1.520</td><td>live</td></tr><tr><td>HBAR-USDT-SWAP</td><td>0.04806</td><td>7670857</td><td>9.74%</td><td>0.00001</td><td>100</td><td>4.806</td><td>live</td></tr><tr><td>HMSTR-USDT-SWAP</td><td>0.002795</td><td>48118020</td><td>19.98%</td><td>0.000001</td><td>100</td><td>0.280</td><td>live</td></tr><tr><td>ICP-USDT-SWAP</td><td>7.76</td><td>18758800</td><td>9.27%</td><td>0.001</td><td>0.01</td><td>0.078</td><td>live</td></tr><tr><td>ICX-USDT-SWAP</td><td>0.1265</td><td>479534</td><td>9.59%</td><td>0.0001</td><td>10</td><td>1.265</td><td>live</td></tr><tr><td>ID-USDT-SWAP</td><td>0.393</td><td>5898757</td><td>10.27%</td><td>0.0001</td><td>10</td><td>3.930</td><td>live</td></tr><tr><td>IMX-USDT-SWAP</td><td>1.3388</td><td>10629049</td><td>12.99%</td><td>0.0001</td><td>1</td><td>1.339</td><td>live</td></tr><tr><td>INJ-USDT-SWAP</td><td>18.423</td><td>23982803</td><td>15.14%</td><td>0.001</td><td>0.1</td><td>1.842</td><td>live</td></tr><tr><td>IOST-USDT-SWAP</td><td>0.004587</td><td>2948790</td><td>10.42%</td><td>0.000001</td><td>1000</td><td>4.587</td><td>live</td></tr><tr><td>IOTA-USDT-SWAP</td><td>0.1088</td><td>3514119</td><td>12.12%</td><td>0.0001</td><td>10</td><td>1.088</td><td>live</td></tr><tr><td>JOE-USDT-SWAP</td><td>0.3053</td><td>964134</td><td>10.38%</td><td>0.0001</td><td>10</td><td>3.053</td><td>live</td></tr><tr><td>JST-USDT-SWAP</td><td>0.02915</td><td>534320</td><td>3.88%</td><td>0.00001</td><td>100</td><td>2.915</td><td>live</td></tr><tr><td>JTO-USDT-SWAP</td><td>2.288</td><td>42328995</td><td>12.63%</td><td>0.001</td><td>1</td><td>2.288</td><td>live</td></tr><tr><td>JUP-USDT-SWAP</td><td>0.9807</td><td>50501813</td><td>11.70%</td><td>0.0001</td><td>10</td><td>9.807</td><td>live</td></tr><tr><td>KISHU-USDT-SWAP</td><td>2.91e-10</td><td>1370436</td><td>15.47%</td><td>1e-12</td><td>1000000000</td><td>0.291</td><td>live</td></tr><tr><td>KNC-USDT-SWAP</td><td>0.4179</td><td>2825737</td><td>9.64%</td><td>0.0001</td><td>1</td><td>0.418</td><td>live</td></tr><tr><td>KSM-USDT-SWAP</td><td>16.93</td><td>5119029</td><td>11.60%</td><td>0.01</td><td>0.1</td><td>1.693</td><td>live</td></tr><tr><td>LDO-USDT-SWAP</td><td>1.014</td><td>19940745</td><td>10.44%</td><td>0.0001</td><td>1</td><td>1.014</td><td>live</td></tr><tr><td>LINK-USDT-SWAP</td><td>11.019</td><td>68096583</td><td>8.64%</td><td>0.001</td><td>1</td><td>11.019</td><td>live</td></tr><tr><td>LOOKS-USDT-SWAP</td><td>0.03781</td><td>3110472</td><td>15.00%</td><td>0.00001</td><td>1</td><td>0.038</td><td>live</td></tr><tr><td>LPT-USDT-SWAP</td><td>10.897</td><td>13994322</td><td>13.52%</td><td>0.001</td><td>0.1</td><td>1.090</td><td>live</td></tr><tr><td>LQTY-USDT-SWAP</td><td>0.8961</td><td>22891532</td><td>21.67%</td><td>0.0001</td><td>1</td><td>0.896</td><td>live</td></tr><tr><td>LRC-USDT-SWAP</td><td>0.1176</td><td>2786586</td><td>10.54%</td><td>0.0001</td><td>10</td><td>1.176</td><td>live</td></tr><tr><td>LSK-USDT-SWAP</td><td>0.7622</td><td>1371423</td><td>9.54%</td><td>0.0001</td><td>1</td><td>0.762</td><td>live</td></tr><tr><td>LTC-USDT-SWAP</td><td>68.61</td><td>48130066</td><td>5.96%</td><td>0.01</td><td>1</td><td>68.610</td><td>live</td></tr><tr><td>LUNA-USDT-SWAP</td><td>0.3341</td><td>16687439</td><td>17.59%</td><td>0.0001</td><td>1</td><td>0.334</td><td>live</td></tr><tr><td>LUNC-USDT-SWAP</td><td>0.00008783</td><td>11661316</td><td>12.89%</td><td>1e-8</td><td>10000</td><td>0.878</td><td>live</td></tr><tr><td>MAGIC-USDT-SWAP</td><td>0.3601</td><td>8259619</td><td>10.95%</td><td>0.0001</td><td>1</td><td>0.360</td><td>live</td></tr><tr><td>MANA-USDT-SWAP</td><td>0.287</td><td>6708573</td><td>10.58%</td><td>0.0001</td><td>10</td><td>2.870</td><td>live</td></tr><tr><td>MASK-USDT-SWAP</td><td>2.351</td><td>25531895</td><td>13.67%</td><td>0.001</td><td>1</td><td>2.351</td><td>live</td></tr><tr><td>MAX-USDT-SWAP</td><td>0.27876</td><td>5964341</td><td>14.40%</td><td>0.00001</td><td>10</td><td>2.788</td><td>live</td></tr><tr><td>MEME-USDT-SWAP</td><td>0.013552</td><td>118249030</td><td>24.84%</td><td>0.000001</td><td>100</td><td>1.355</td><td>live</td></tr><tr><td>MERL-USDT-SWAP</td><td>0.2722</td><td>11460205</td><td>13.98%</td><td>0.0001</td><td>1</td><td>0.272</td><td>live</td></tr><tr><td>METIS-USDT-SWAP</td><td>38.45</td><td>6644429</td><td>11.21%</td><td>0.01</td><td>0.1</td><td>3.845</td><td>live</td></tr><tr><td>MEW-USDT-SWAP</td><td>0.010341</td><td>176944592</td><td>13.05%</td><td>0.000001</td><td>1000</td><td>10.341</td><td>live</td></tr><tr><td>MINA-USDT-SWAP</td><td>0.5121</td><td>6204444</td><td>11.91%</td><td>0.0001</td><td>1</td><td>0.512</td><td>live</td></tr><tr><td>MKR-USDT-SWAP</td><td>1105.5</td><td>25207885</td><td>13.47%</td><td>0.1</td><td>0.01</td><td>11.055</td><td>live</td></tr><tr><td>MOODENG-USDT-SWAP</td><td>0.25315</td><td>391207147</td><td>37.74%</td><td>0.00001</td><td>10</td><td>2.531</td><td>live</td></tr><tr><td>MOVR-USDT-SWAP</td><td>9.209</td><td>2921436</td><td>12.90%</td><td>0.001</td><td>0.1</td><td>0.921</td><td>live</td></tr><tr><td>NEAR-USDT-SWAP</td><td>4.235</td><td>54140697</td><td>12.13%</td><td>0.001</td><td>10</td><td>42.350</td><td>live</td></tr><tr><td>NEIROETH-USDT-SWAP</td><td>0.06449</td><td>68093276</td><td>17.07%</td><td>0.00001</td><td>100</td><td>6.449</td><td>live</td></tr><tr><td>NEO-USDT-SWAP</td><td>9.385</td><td>5265520</td><td>9.65%</td><td>0.001</td><td>1</td><td>9.385</td><td>live</td></tr><tr><td>NFT-USDT-SWAP</td><td>4.334e-7</td><td>358522</td><td>4.76%</td><td>1e-10</td><td>1000000</td><td>0.433</td><td>live</td></tr><tr><td>NMR-USDT-SWAP</td><td>14.28</td><td>2893078</td><td>13.28%</td><td>0.01</td><td>0.1</td><td>1.428</td><td>live</td></tr><tr><td>NOT-USDT-SWAP</td><td>0.006715</td><td>71077731</td><td>20.66%</td><td>0.000001</td><td>100</td><td>0.671</td><td>live</td></tr><tr><td>OM-USDT-SWAP</td><td>1.27257</td><td>8675759</td><td>7.58%</td><td>0.00001</td><td>10</td><td>12.726</td><td>live</td></tr><tr><td>ONDO-USDT-SWAP</td><td>0.6878</td><td>14022749</td><td>13.35%</td><td>0.0001</td><td>10</td><td>6.878</td><td>live</td></tr><tr><td>ONE-USDT-SWAP</td><td>0.01214</td><td>1891743</td><td>10.89%</td><td>0.00001</td><td>100</td><td>1.214</td><td>live</td></tr><tr><td>ONT-USDT-SWAP</td><td>0.1731</td><td>3357333</td><td>10.31%</td><td>0.0001</td><td>10</td><td>1.731</td><td>live</td></tr><tr><td>OP-USDT-SWAP</td><td>1.5696</td><td>46727457</td><td>10.68%</td><td>0.0001</td><td>1</td><td>1.570</td><td>live</td></tr><tr><td>ORBS-USDT-SWAP</td><td>0.02654</td><td>18464847</td><td>14.10%</td><td>0.00001</td><td>100</td><td>2.654</td><td>live</td></tr><tr><td>ORDI-USDT-SWAP</td><td>31.612</td><td>178399379</td><td>16.56%</td><td>0.001</td><td>0.1</td><td>3.161</td><td>live</td></tr><tr><td>PEPE-USDT-SWAP</td><td>0.000009061</td><td>473863162</td><td>12.23%</td><td>1e-9</td><td>10000000</td><td>90.610</td><td>live</td></tr><tr><td>PERP-USDT-SWAP</td><td>0.6335</td><td>6698791</td><td>13.22%</td><td>0.0001</td><td>1</td><td>0.633</td><td>live</td></tr><tr><td>POL-USDT-SWAP</td><td>0.3284</td><td>11393365</td><td>10.25%</td><td>0.0001</td><td>10</td><td>3.284</td><td>live</td></tr><tr><td>POPCAT-USDT-SWAP</td><td>1.4598</td><td>80351567</td><td>16.21%</td><td>0.0001</td><td>10</td><td>14.598</td><td>live</td></tr><tr><td>PRCL-USDT-SWAP</td><td>0.2431</td><td>20713871</td><td>18.12%</td><td>0.0001</td><td>1</td><td>0.243</td><td>live</td></tr><tr><td>PUFFER-USDT-SWAP</td><td>0.2734</td><td>16183470</td><td>16.39%</td><td>0.0001</td><td>10</td><td>2.734</td><td>live</td></tr><tr><td>PYTH-USDT-SWAP</td><td>0.3497</td><td>14906319</td><td>13.72%</td><td>0.0001</td><td>10</td><td>3.497</td><td>live</td></tr><tr><td>QTUM-USDT-SWAP</td><td>2.224</td><td>2351889</td><td>10.47%</td><td>0.001</td><td>1</td><td>2.224</td><td>live</td></tr><tr><td>RACA-USDT-SWAP</td><td>0.0001725</td><td>1249340</td><td>8.65%</td><td>1e-7</td><td>10000</td><td>1.725</td><td>live</td></tr><tr><td>RAY-USDT-SWAP</td><td>3.0073</td><td>42504751</td><td>16.84%</td><td>0.0001</td><td>1</td><td>3.007</td><td>live</td></tr><tr><td>RDNT-USDT-SWAP</td><td>0.0502</td><td>18787925</td><td>16.19%</td><td>0.00001</td><td>10</td><td>0.502</td><td>live</td></tr><tr><td>RENDER-USDT-SWAP</td><td>4.824</td><td>12668253</td><td>15.22%</td><td>0.001</td><td>1</td><td>4.824</td><td>live</td></tr><tr><td>RON-USDT-SWAP</td><td>1.477</td><td>1910703</td><td>9.08%</td><td>0.001</td><td>1</td><td>1.477</td><td>live</td></tr><tr><td>RSR-USDT-SWAP</td><td>0.006042</td><td>5111049</td><td>9.67%</td><td>0.000001</td><td>100</td><td>0.604</td><td>live</td></tr><tr><td>RVN-USDT-SWAP</td><td>0.01748</td><td>9216602</td><td>11.32%</td><td>0.00001</td><td>10</td><td>0.175</td><td>live</td></tr><tr><td>SAND-USDT-SWAP</td><td>0.247</td><td>13787068</td><td>10.94%</td><td>0.0001</td><td>10</td><td>2.470</td><td>live</td></tr><tr><td>SATS-USDT-SWAP</td><td>2.3636e-7</td><td>85420811</td><td>17.37%</td><td>1e-11</td><td>10000000</td><td>2.364</td><td>live</td></tr><tr><td>SCR-USDT-SWAP</td><td>0.802</td><td>10660453</td><td>10.54%</td><td>0.001</td><td>1</td><td>0.802</td><td>live</td></tr><tr><td>SHIB-USDT-SWAP</td><td>0.000017065</td><td>99361297</td><td>10.46%</td><td>1e-9</td><td>1000000</td><td>17.065</td><td>live</td></tr><tr><td>SLP-USDT-SWAP</td><td>0.002731</td><td>27206590</td><td>22.72%</td><td>0.000001</td><td>10</td><td>0.027</td><td>live</td></tr><tr><td>SNX-USDT-SWAP</td><td>1.397</td><td>6497715</td><td>9.69%</td><td>0.001</td><td>1</td><td>1.397</td><td>live</td></tr><tr><td>SSV-USDT-SWAP</td><td>19.6</td><td>10393782</td><td>14.72%</td><td>0.01</td><td>0.1</td><td>1.960</td><td>live</td></tr><tr><td>STORJ-USDT-SWAP</td><td>0.4407</td><td>24170328</td><td>12.45%</td><td>0.0001</td><td>10</td><td>4.407</td><td>live</td></tr><tr><td>STRK-USDT-SWAP</td><td>0.3707</td><td>20780396</td><td>14.01%</td><td>0.0001</td><td>1</td><td>0.371</td><td>live</td></tr><tr><td>STX-USDT-SWAP</td><td>1.6917</td><td>23002341</td><td>11.86%</td><td>0.0001</td><td>10</td><td>16.917</td><td>live</td></tr><tr><td>SUSHI-USDT-SWAP</td><td>0.6825</td><td>13308955</td><td>12.72%</td><td>0.0001</td><td>1</td><td>0.682</td><td>live</td></tr><tr><td>SWEAT-USDT-SWAP</td><td>0.008149</td><td>20073956</td><td>33.01%</td><td>0.000001</td><td>100</td><td>0.815</td><td>live</td></tr><tr><td>T-USDT-SWAP</td><td>0.02246</td><td>987407</td><td>7.41%</td><td>0.00001</td><td>100</td><td>2.246</td><td>live</td></tr><tr><td>TAO-USDT-SWAP</td><td>509.9</td><td>16477480</td><td>13.78%</td><td>0.1</td><td>0.01</td><td>5.099</td><td>live</td></tr><tr><td>THETA-USDT-SWAP</td><td>1.1469</td><td>6769872</td><td>13.57%</td><td>0.0001</td><td>10</td><td>11.469</td><td>live</td></tr><tr><td>TIA-USDT-SWAP</td><td>5.381</td><td>109113706</td><td>12.86%</td><td>0.001</td><td>1</td><td>5.381</td><td>live</td></tr><tr><td>TNSR-USDT-SWAP</td><td>0.4419</td><td>39340834</td><td>16.56%</td><td>0.0001</td><td>1</td><td>0.442</td><td>live</td></tr><tr><td>TRB-USDT-SWAP</td><td>58.42</td><td>41252979</td><td>15.24%</td><td>0.01</td><td>0.1</td><td>5.842</td><td>live</td></tr><tr><td>TRX-USDT-SWAP</td><td>0.16508</td><td>24498978</td><td>2.21%</td><td>0.00001</td><td>1000</td><td>165.080</td><td>live</td></tr><tr><td>TURBO-USDT-SWAP</td><td>0.0086918</td><td>127894118</td><td>14.03%</td><td>1e-7</td><td>10000</td><td>86.918</td><td>live</td></tr><tr><td>ULTI-USDT-SWAP</td><td>0.0152</td><td>11159340</td><td>20.50%</td><td>0.00001</td><td>100</td><td>1.520</td><td>live</td></tr><tr><td>UMA-USDT-SWAP</td><td>2.575</td><td>12494819</td><td>12.51%</td><td>0.001</td><td>0.1</td><td>0.258</td><td>live</td></tr><tr><td>UNI-USDT-SWAP</td><td>7.409</td><td>66245477</td><td>9.88%</td><td>0.001</td><td>1</td><td>7.409</td><td>live</td></tr><tr><td>USDC-USDT-SWAP</td><td>1.0011</td><td>1111311</td><td>0.10%</td><td>0.0001</td><td>10</td><td>10.011</td><td>live</td></tr><tr><td>USTC-USDT-SWAP</td><td>0.02064</td><td>19059170</td><td>16.15%</td><td>0.00001</td><td>100</td><td>2.064</td><td>live</td></tr><tr><td>VELO-USDT-SWAP</td><td>0.012479</td><td>5912338</td><td>11.16%</td><td>0.000001</td><td>1000</td><td>12.479</td><td>live</td></tr><tr><td>VRA-USDT-SWAP</td><td>0.002611</td><td>3227251</td><td>16.79%</td><td>0.000001</td><td>1000</td><td>2.611</td><td>live</td></tr><tr><td>W-USDT-SWAP</td><td>0.2424</td><td>23008647</td><td>13.05%</td><td>0.0001</td><td>1</td><td>0.242</td><td>live</td></tr><tr><td>WAXP-USDT-SWAP</td><td>0.03075</td><td>556938</td><td>8.80%</td><td>0.00001</td><td>100</td><td>3.075</td><td>live</td></tr><tr><td>WIF-USDT-SWAP</td><td>2.37</td><td>144906355</td><td>14.21%</td><td>0.001</td><td>1</td><td>2.370</td><td>live</td></tr><tr><td>WLD-USDT-SWAP</td><td>2.02</td><td>233382500</td><td>17.33%</td><td>0.001</td><td>1</td><td>2.020</td><td>live</td></tr><tr><td>WOO-USDT-SWAP</td><td>0.1762</td><td>5287628</td><td>13.51%</td><td>0.0001</td><td>10</td><td>1.762</td><td>live</td></tr><tr><td>XCH-USDT-SWAP</td><td>13.43</td><td>2483831</td><td>8.77%</td><td>0.01</td><td>0.01</td><td>0.134</td><td>live</td></tr><tr><td>XLM-USDT-SWAP</td><td>0.09436</td><td>4392071</td><td>4.42%</td><td>0.00001</td><td>100</td><td>9.436</td><td>live</td></tr><tr><td>XTZ-USDT-SWAP</td><td>0.6327</td><td>5448654</td><td>7.98%</td><td>0.0001</td><td>1</td><td>0.633</td><td>live</td></tr><tr><td>YFI-USDT-SWAP</td><td>4654</td><td>5906010</td><td>9.58%</td><td>1</td><td>0.0001</td><td>0.465</td><td>live</td></tr><tr><td>YGG-USDT-SWAP</td><td>0.4659</td><td>27969204</td><td>14.42%</td><td>0.0001</td><td>1</td><td>0.466</td><td>live</td></tr><tr><td>ZENT-USDT-SWAP</td><td>0.01664</td><td>1845720</td><td>16.50%</td><td>0.00001</td><td>100</td><td>1.664</td><td>live</td></tr><tr><td>ZETA-USDT-SWAP</td><td>0.629</td><td>21566454</td><td>10.95%</td><td>0.0001</td><td>10</td><td>6.290</td><td>live</td></tr><tr><td>ZIL-USDT-SWAP</td><td>0.01397</td><td>2101341</td><td>10.70%</td><td>0.00001</td><td>100</td><td>1.397</td><td>live</td></tr><tr><td>ZK-USDT-SWAP</td><td>0.1315</td><td>18894109</td><td>11.83%</td><td>0.0001</td><td>10</td><td>1.315</td><td>live</td></tr><tr><td>ZRO-USDT-SWAP</td><td>3.46</td><td>30143364</td><td>17.82%</td><td>0.001</td><td>1</td><td>3.460</td><td>live</td></tr><tr><td>ZRX-USDT-SWAP</td><td>0.3184</td><td>7581559</td><td>12.26%</td><td>0.0001</td><td>10</td><td>3.184</td><td>live</td></tr></tbody>
+	</table>
+	<table id="reply">	<!--回報表-->
+		<caption>回報表（僅限永續合約未成交）
+			<div>
+				<select id="orderCount" style="width:180px;"></select>
+				<button onclick="btnCancelAll();">全刪單</button>個別刪單請到OKX網站或APP
+			</div>
+		</caption>
+		
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>clOrdId</th>
+				<th>name</th>
+				<th>狀態</th>
+				<th>買賣</th>
+				<th>價格</th>
+				<th>委託量</th>
+				<th>成交量</th>
+				<th>委託時間</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<table id="history"> <!--歷史區-->
+		<caption>歷史區		
+			<select id="historyInterval">
+				<option value="7days">近七天</option>
+				<option value="3months">近三月</option>
+			</select>
+			<button onclick="getHistory(this);">取得</button>
+		</caption>
+		<thead>
+			<tr>
+				<th>name</th>
+				<th>初時</th>
+				<th>初價</th>
+				<th>買次</th>
+				<th>買量</th>
+				<th>買均價</th>
+				<th>賣次</th>
+				<th>賣量</th>
+				<th>賣均價</th>
+				<th>終時</th>
+				<th>終價</th>
+				<th>增減</th>
+				<th>均成本</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div style="padding:10px;border:3px solid coral;" id="films">
+		<h3>影片區</h3>
+		<div class="film">
+			001_開戶
+			<div style="padding:42.2% 0 0 0;position:relative;"><iframe src="./index_files/993815425.html" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="001_開戶" data-ready="true"></iframe></div>
+		</div>
+		<div class="film">
+			002_參數
+			<div style="padding:42.2% 0 0 0;position:relative;"><iframe src="./index_files/993815611.html" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="002_參數" data-ready="true"></iframe></div>
+		</div>
+		<div class="film">
+			003_策略
+			<div style="padding:42.2% 0 0 0;position:relative;"><iframe src="./index_files/993828481.html" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="003_策略" data-ready="true"></iframe></div>
+		</div>
+	</div>
+
+
+</body></html>
