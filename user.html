@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OKX無敵蛛網</title>
+    <style>
+		/* CSS 部分，用來設置固定標題列的樣式 */
+		.header {
+			background-color: #333;
+			color: #fff;
+			padding: 10px 20px;
+			position: fixed;
+			width: 100%;
+			height: 30px;
+			top: 0;
+			left: 0;
+			z-index: 1000; /* 比其他元素疊放層級高 */
+		}
+		.header a {
+			color: #fff;
+			text-decoration: none; /* 鏈接文字無下劃線 */
+			margin-right: 20px; /* 鏈接間距 */
+		}
+		.header a:hover {
+			text-decoration: underline; /* 鼠標懸停時顯示下劃線 */
+		}
+		div.discription {
+			background-color: lightyellow;
+			border: 1px solid lightblue;
+			padding: 5px;
+		}
+		input[type='password'], input[type='text'] {
+			width: 80px;
+		}
+        table {
+            width: 80%;
+            border-collapse: collapse;
+			margin: 10px;
+ 			scroll-margin-top: 50px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+		th {
+			background-color: lightgray;
+		}
+		button {
+			margin: 3px;
+		}
+		.selected {
+			background-color: yellow; /* 选中的单元格背景颜色 */
+		}
+		.drag-selecting {
+			background-color: lightblue; /* 正在拖曳选择的单元格背景颜色 */
+		}
+		div.ioFile {
+			display:inline-block;
+			border:1px solid orange;
+			padding: 5px;
+			margin: 5px;
+		}
+		#startWork {
+			border: 1px solid lightblue;
+			background-color: gray;
+		}
+		#customAlert {
+            /* 
+			*/
+            display: none; 
+			position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid black;
+            padding: 20px;
+            z-index: 1000;
+        }
+		#history caption button:disabled {
+			background-color: #cccccc; /* 灰色背景 */
+			color: #666666; /* 灰色文字 */
+			cursor: not-allowed; /* 禁用狀態下的鼠標指針 */
+			border: 1px solid #999999; /* 灰色邊框 */
+		}
+		.film {
+			display: inline-block;
+			width: 30%;
+			height: 40%;
+			margin: 1%;
+		}
+    </style>
+    <script src="userInfo.js" defer></script>
+    <script src="rwInfo.js" defer></script>
+    <script src="okx.js" defer></script>
+    <script src="strategy.js" defer></script>
+	<script src="wsUserData.js" defer></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+	<script src="https://player.vimeo.com/api/player.js"></script>
+</head>
+<body>
+	<div class="header">
+		<!-- 固定標題列的內容 -->
+		<a href="#">頁首</a>
+		<a href="#strategy">策略表</a>
+		<a href="#market">市場表</a>
+		<a href="#reply">回報表</a>
+		<a href="#history">歷史區</a>
+		<a href="#films">影片區</a>
+		<a href="https://www.okx.com/join/AXHUANG" style="color:gold;">OKX開戶</a>
+		<span style='margin-right:2%;float:right;'>更新日期：2024/10/08</span>
+	</div>
+	<div style='padding-top:50px;'></div>
+	<div id="customAlert">
+        <span id="alertMessage"></span>
+		<button onclick="displayNextAlert();">下一則</button>
+        <button onclick="closeAlert()">關閉</button>
+    </div>
+
+	<div class='ioFile'>
+		<input onchange='readIDPW(event);' style='border:2px solid coral;' type="file" id="fileInput">
+		<br/>讀取本機儲存帳號密碼的檔案
+	</div>
+	<div class='ioFile'>
+		<input onchange='readParaStra(event);' style='border:2px solid coral;' type="file" id="fileInput">
+		<br/>讀取本機儲存參數策略的檔案
+	</div>
+	<div class='ioFile'>
+		本機儲存：
+		<button id="saveButton" onclick='writeIDPW();'>儲存帳密</button>
+		<button id='saveParaStra' onclick='writeParaStra();'>儲存參數策略</button>
+		<br/>因瀏覽器安全設定，不一定都可以成功儲存，可以的話會開啟下載對話窗。
+	</div>
+	<table id='okxData' border="1"> <!--資料表-->
+		<caption>資料表</caption>
+		<thead>
+			<tr>
+				<th>UID</th>
+				<th>Label</th>
+				<th>Key</th>
+				<th>Secret</th>
+				<th>PassPhrase</th>
+				<th>交易帳戶</th>
+				<th>放貸金額</th>
+				<th>總資金</th>
+				<th>部位合計</th>
+				<th>自由資金</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td id='uid'></td>
+				<td id='label'></td>
+				<td><input id='key' type='password'></input></td>
+				<td><input id='secret' type='password'></input></td>
+				<td><input id='passPhrase' type='password'></input></td>
+				<td id='usdt'></td>
+				<td id='earn'></td>
+				<td id='total'></td>
+				<td id='position'></td>
+				<td id="avail"></td>
+				<td id="day_ago" style="display:none;"></td>
+			</tr>
+		</tbody>
+	</table>
+	<div id='cloudSaveLoad' style='display:none;' class='discription'>
+		雲端資料存儲：<br/>
+		<button onclick='readInfo();'>下載參數</button>從雲端下載。須先從「更新資料」讀取UID與Label資料。
+		<br/><button onclick='hWriteInfo();'>上傳設定</button>把當前頁面的參數和策略資訊上傳到雲端。
+	</div>
+	<table id='parameters' border="1"> <!--參數表-->
+		<caption>參數表</caption>
+		<thead>
+			<tr>
+				<th>總部位上限</th>
+				<th>初始持倉比例</th>
+				<th>平倉比例</th>
+				<th>總槓桿上限</th>
+				<th>總槓桿下限</th>
+				<th>風控降槓桿比例</th>
+				<th>日增槓桿比例</th>
+				<th>預設保證金槓桿</th>
+				<th>接受最大高低差</th>
+				<th>單日回檔停止</th>
+				<th>固定放貸</th>
+				<th>自由資金比重上限</th>
+				<th>自由資金比重下限</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td id='TotalLimit'>0.5</td>
+				<td id='TotalLong'>0</td>
+				<td id='Clear'>1</td>
+				<td id='MaxTotalL'>20</td>
+				<td id='MinTotalL'>5</td>
+				<td id='CutLeverage'>0.7</td>
+				<td id='LeverageUp'>0.1</td>
+				<td id='defaultN'>10</td>
+				<td id='hlLimit'>2</td>
+				<td id='MinusStop'>0.5</td>
+				<td id='fixed'>0</td>
+				<td id='AvailRatioUp'>1</td>
+				<td id='AvailRatioDown'>0</td>
+			</tr>
+			<!-- 初始資料行，如果需要的話可以預先添加 -->
+		</tbody>
+	</table>
+	<div class='discription'>
+		<span style='float:right;border:1px solid orange;'>*部位合計包含不在策略表中的商品數據</span>
+		<input type="text" id="inputText" placeholder="輸入數字">
+		<button onclick="fillCell('#parameters');">改參數</button>
+		<button onclick="fillCell('#strategy');">改策略</button>可輸入百分比%，但會轉換成小數。
+		<br/>先選取格子，按住滑鼠拖曳可複選，按滑鼠右鍵取消選取。
+		<br/>active欄位在代入數字0時為取消，其它數字皆為勾選。
+		<br/><button onclick='readOkx();'>更新資料</button>把頁面資訊餵給程式。須先輸入Key, Secret與PassPhrase，成功後每5秒讀取一次資金、部位與未成交委託回報。
+		<div style='border:2px solid red;'>
+			<input type='checkbox' id='startWork'>
+			<label for='startWork' style='border: 2px solid blue;'>開始運作</label>
+			<span style='margin-left:10px;'>勾取後啟動連線，並開始依設定下單。取消則中斷連線，也不會下單。</span>
+			<br/><input type="checkbox" id="pauseTimer">
+			<label for="pauseTimer" style="border:2px solid blue;">暫停自動</label>
+			<span style="margin-left:10px;">暫停每五秒的讀取資金、部位與未成交回報，也就不會檢查風控，但有成交還是會處理。</span>
+		</div>
+	</div>
+	<table id='strategy' border="1"> <!--策略表-->
+		<caption>策略表</caption>
+		<thead>
+			<tr>
+				<th>name</th>
+				<th>active</th>
+				<th>leverage</th>
+				<th>步差</th>
+				<th>單數</th>
+				<th>hold上限</th>
+				<th>hold下限</th>
+				<th>hold</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- 初始資料行，如果需要的話可以預先添加 -->
+		</tbody>
+	</table>
+	<div class='discription'>
+		<button onclick='removeStrategy();'>移除策略</button>選取策略表name(可複選)再按下即移除策略。
+		<br/><button onclick='newStrategy();'>新增策略</button>選取市場表name(可複選)再按下即新增策略。市場表點表頭可以進行排序，重覆點切換大小排序。
+		<br/>按住滑鼠拖曳可複選，按滑鼠右鍵取消選取。
+	</div>
+	<table id="market" border="1"> <!--市場表-->
+		<caption>市場表		<button onclick='okxMarket();'>更新</button></caption>
+		<thead>
+			<tr>
+				<th onclick='sortTable(0);'>name</th>
+				<th onclick='sortTable(1);'>price</th>
+				<th onclick='sortTable(2);'>一日量</th>
+				<th onclick='sortTable(3);'>高低比差</th>
+				<th onclick='sortTable(4);'>價格單位</th>
+				<th onclick='sortTable(5);'>委託單位</th>
+				<th onclick='sortTable(6);'>最小委託值</th>
+				<th onclick='sortTable(7);'>狀態</th>
+			</tr>
+		</thead>
+		<tbody>
+		
+		</tbody>
+	</table>
+	<table id='reply'>	<!--回報表-->
+		<caption>回報表（僅限永續合約未成交）
+			<div>
+				<select id="orderCount" style="width:180px;"></select>
+				<button onclick="btnCancelAll();">全刪單</button>個別刪單請到OKX網站或APP
+			</div>
+		</caption>
+		
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>clOrdId</th>
+				<th>name</th>
+				<th>狀態</th>
+				<th>買賣</th>
+				<th>價格</th>
+				<th>委託量</th>
+				<th>成交量</th>
+				<th>委託時間</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<table id='history'> <!--歷史區-->
+		<caption>歷史區		
+			<select id="historyInterval">
+				<option value="7days">近七天</option>
+				<option value="3months">近三月</option>
+			</select>
+			<button onclick='getHistory(this);'>取得</button>
+		</caption>
+		<thead>
+			<tr>
+				<th>name</th>
+				<th>初時</th>
+				<th>初價</th>
+				<th>買次</th>
+				<th>買量</th>
+				<th>買均價</th>
+				<th>賣次</th>
+				<th>賣量</th>
+				<th>賣均價</th>
+				<th>終時</th>
+				<th>終價</th>
+				<th>增減</th>
+				<th>均成本</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div style="padding:10px;border:3px solid coral;" id="films">
+		<h3>影片區</h3>
+		<div class="film">
+			001_開戶
+			<div style="padding:42.2% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/993815425?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="001_開戶"></iframe></div>
+		</div>
+		<div class="film">
+			002_參數
+			<div style="padding:42.2% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/993815611?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="002_參數"></iframe></div>
+		</div>
+		<div class="film">
+			003_策略
+			<div style="padding:42.2% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/993828481?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="003_策略"></iframe></div>
+		</div>
+	</div>
+</body>
+</html>
