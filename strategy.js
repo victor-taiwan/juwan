@@ -196,6 +196,7 @@ function orderFilled(drR) {
 function startStrategy(instId) {
 	//非工作狀態跳出
 	if (!document.getElementById('startWork').checked) return;
+
 	const drS = dtStrategy.find(item => item.name === instId);
 	// 勾选Active进行启动下单
 	if (drS && drS.active.toLowerCase() === 'true') {
@@ -203,7 +204,11 @@ function startStrategy(instId) {
 		//開始前先更新報價，okxMarket設定1秒內不連續觸發
 		okxMarket();
 		if (instId in dtMarket && dtMarket[instId].state === 'live') {
+			//大於震幅限跳出
 			const drM = dtMarket[instId];
+			const sngRatioHL = drM ? drM.ratioHL : 0;
+			if (sngRatioHL > dicParameters.hlLimit) return;
+
 			const intR = Math.round(Math.log(drM.price) / Math.log(1 + parseFloat(drS.歩差))); // 当前价格是(1+r)的？次方
 			const volR = dicCapital.total * drS.leverage * 0.5 / drM.price; // 基准量
 			const lstOrder = [];
